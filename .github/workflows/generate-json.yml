@@ -1,0 +1,30 @@
+name: Generate images.json for galleries
+
+on:
+  push:
+    paths:
+      - 'gallery_*/**'  # trigger when any gallery folder changes
+
+jobs:
+  generate-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Generate JSON
+        run: |
+          for dir in gallery_*; do
+            echo "Processing $dir"
+            images=$(ls $dir | grep -E "\.jpg|\.png|\.jpeg|\.gif" | tr '\n' ',' | sed 's/,$//')
+            json="[\"$(echo $images | sed 's/,/","/g')\"]"
+            echo $json > $dir/images.json
+          done
+
+      - name: Commit & push JSON files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add gallery_*/images.json
+          git commit -m "Update images.json via GitHub Action" || echo "No changes to commit"
+          git push
