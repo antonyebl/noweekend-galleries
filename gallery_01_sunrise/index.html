@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sunrise Gallery</title>
-<link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Gallery</title>
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
+    <div class="gallery-container">
+        <div class="gallery-scroll">
+            <div class="gallery" id="image-gallery">
+                <!-- Images will be loaded dynamically from images.json -->
+            </div>
+        </div>
+        
+        <button class="nav-btn prev">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <button class="nav-btn next">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </div>
 
-<h2 style="text-align:center;">Sunrise Gallery</h2>
-
-<button class="arrow arrow-left">&#8592;</button>
-<div class="carousel" id="carousel"></div>
-<button class="arrow arrow-right">&#8594;</button>
-
-<script src="../script.js"></script>
-<script>
-    initGallery('carousel', 'images.json');
-</script>
+    <script src="../script.js"></script>
 </body>
 </html>
