@@ -1,11 +1,10 @@
 [
-    "01.jpg",
-    "02.jpg",
-    "03.jpg",
-    "04.jpg",
-    "05.jpg",
-    "06.jpg",
-    "07.jpg",
-    "08.jpg"
+  {"url": "01.jpg", "alt": "Sunrise over mountains"},
+  {"url": "02.jpg", "alt": "Early morning mist"},
+  {"url": "03.jpg", "alt": "Sun rays through clouds"},
+  {"url": "04.jpg", "alt": "Golden hour landscape"},
+  {"url": "05.jpg", "alt": "Sunrise reflection on water"},
+  {"url": "06.jpg", "alt": "Colorful morning sky"},
+  {"url": "07.jpg", "alt": "Sun breaking horizon"},
+  {"url": "08.jpg", "alt": "Dawn panoramic view"}
 ]
-
