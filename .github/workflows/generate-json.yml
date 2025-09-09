@@ -1,42 +1,37 @@
-name: Generate JSON for image galleries
+name: Generate Images JSON
 
 on:
   push:
-    paths:
-      - 'gallery_*/**'
-    branches: [ main ]
+    branches:
+      - main  # or 'master', depending on your default branch
+  workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
-  generate-json:
+  generate_json:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Generate JSON for each gallery
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate JSON files
         run: |
-          for gallery in gallery_*; do
-            if [ -d "$gallery" ]; then
-              json_file="$gallery/images.json"
-              echo "[" > "$json_file"
-              first=true
-              for img in $(ls $gallery/*.jpg | sort); do
-                if [ "$first" = true ]; then
-                  first=false
-                else
-                  echo "," >> "$json_file"
-                fi
-                filename=$(basename "$img")
-                echo "  {\"url\": \"$filename\", \"alt\": \"${filename%.jpg}\"}" >> "$json_file"
-              done
-              echo "]" >> "$json_file"
-              echo "Generated $json_file"
+          for dir in gallery_*/; do
+            if [ -d "$dir" ]; then
+              echo "Processing $dir..."
+              cd "$dir"
+              # Find all files ending with .jpg, sort them, and format as JSON
+              find . -maxdepth 1 -type f -iname "*.jpg" | sort | awk -F'/' '{printf "\"%s\",\n", $2}' | sed '$s/,$//' > images_list.json
+              # Add JSON array brackets
+              sed -i '1s/^/[/' images_list.json
+              echo "]" >> images_list.json
+              mv images_list.json images.json
+              cd ..
             fi
           done
-          
-      - name: Commit and push if changed
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add gallery_*/images.json
-          git diff --cached --quiet || git commit -m "Auto-generated JSON files for galleries"
-          git push
+      
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'Generated images.json files'
+          file_pattern: 'gallery_*/images.json'
