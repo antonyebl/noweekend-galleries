@@ -4,9 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const leftArrow = document.querySelector('.left-arrow');
     const rightArrow = document.querySelector('.right-arrow');
 
-    let imagesLoadedCount = 0;
     const allImages = [];
 
+    // --- Fetch Image Data and Average Colors ---
     fetch('images.json')
         .then(response => {
             if (!response.ok) {
@@ -14,27 +14,31 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return response.json();
         })
-        .then(imageFilenames => {
-            if (!Array.isArray(imageFilenames)) {
+        .then(imageData => {
+            if (!Array.isArray(imageData)) {
                 throw new Error('images.json content is not a valid array.');
             }
 
-            imageFilenames.forEach(filename => {
+            let imagesLoadedCount = 0;
+            const totalImages = imageData.length;
+
+            imageData.forEach(item => {
                 const img = document.createElement('img');
-                img.src = filename;
-                img.alt = filename;
+                img.src = item.filename;
+                img.alt = item.filename;
                 img.classList.add('gallery-image');
                 galleryWrapper.appendChild(img);
                 allImages.push(img);
 
+                // Apply the pre-calculated average color as the background
+                img.style.backgroundColor = item.avgColor;
+
                 img.onload = () => {
+                    img.classList.add('loaded');
                     imagesLoadedCount++;
-                    if (imagesLoadedCount === imageFilenames.length) {
-                        setupGallery(imageFilenames);
+                    if (imagesLoadedCount === totalImages) {
+                        setupGallery(imageData.map(i => i.filename));
                     }
-                };
-                img.onerror = () => {
-                    console.error(`Error loading image: ${filename}`);
                 };
             });
         })
@@ -43,7 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
             galleryWrapper.innerHTML = `<p style="color:white; text-align:center;">Error loading gallery. Please ensure the images.json file exists and is valid.</p>`;
         });
 
+    // --- Setup Gallery Function (Runs After Images are Loaded) ---
     function setupGallery(imageFilenames) {
+        // Duplicate images for the infinite loop effect
         allImages.forEach(img => {
             const clone = img.cloneNode(true);
             galleryWrapper.appendChild(clone);
@@ -86,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!firstImage) return;
 
             const moveDistance = (firstImage.offsetWidth + gap);
-            
             if (e.key === 'ArrowRight') {
                 smoothScroll(-moveDistance);
             } else if (e.key === 'ArrowLeft') {
@@ -151,4 +156,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
