@@ -8,8 +8,7 @@ body {
 
 .gallery-container {
     width: 100%;
-    /* No height here */
-    padding: 20px 0; /* Add top/bottom padding for spacing */
+    /* Removed: padding: 20px 0; */
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -66,4 +65,5 @@ body {
     border-right: 2px solid black;
     transform: translateY(-50%) rotate(45deg);
 }
+
 
