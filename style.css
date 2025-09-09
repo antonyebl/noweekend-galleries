@@ -1,6 +1,7 @@
-body {
+html, body {
     margin: 0;
     padding: 0;
+    height: 100%; /* Ensure HTML and Body take up the full viewport height */
     font-family: sans-serif;
     background-color: #ffffff;
     overflow: hidden;
@@ -8,8 +9,9 @@ body {
 
 .gallery-container {
     width: 100%;
+    height: 100%; /* Ensures the container takes up the full height of the body */
     margin: 0;
-    padding: 0; /* Ensures no padding is affecting the size */
+    padding: 0;
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -24,12 +26,12 @@ body {
 .gallery-wrapper {
     display: flex;
     gap: 15px;
+    height: 100%; /* Ensures the wrapper takes up the full height of its container */
     will-change: transform;
-    /* Height is now controlled by the images inside */
 }
 
 .gallery-image {
-    height: 100%; /* The image height will be the full height of the gallery-wrapper */
+    height: 100%; /* The image height will now correctly be 100% of the wrapper's height */
     object-fit: contain;
     pointer-events: none;
 }
