@@ -8,7 +8,8 @@ body {
 
 .gallery-container {
     width: 100%;
-    /* Removed: padding: 20px 0; */
+    margin: 0; /* Ensures no default margin is applied */
+    /* Padding was removed in a previous step */
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -23,12 +24,11 @@ body {
 .gallery-wrapper {
     display: flex;
     gap: 15px;
-    /* Removed: height: 60vh; */
     will-change: transform;
 }
 
 .gallery-image {
-    height: 500px; /* Use a fixed pixel height for all images */
+    height: 300px; /* Use a fixed pixel height for all images */
     object-fit: contain;
     pointer-events: none;
 }
@@ -65,5 +65,3 @@ body {
     border-right: 2px solid black;
     transform: translateY(-50%) rotate(45deg);
 }
-
-
