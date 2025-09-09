@@ -86,8 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!firstImage) return;
 
             const moveDistance = (firstImage.offsetWidth + gap);
-            console.log(`Key pressed. Image width: ${firstImage.offsetWidth}, Gap: ${gap}, Move distance: ${moveDistance}`);
-
+            
             if (e.key === 'ArrowRight') {
                 smoothScroll(-moveDistance);
             } else if (e.key === 'ArrowLeft') {
@@ -100,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const firstImage = allImages[0];
             if (!firstImage) return;
             const moveDistance = (firstImage.offsetWidth + gap);
-            console.log(`Left arrow clicked. Image width: ${firstImage.offsetWidth}, Gap: ${gap}, Move distance: ${moveDistance}`);
             smoothScroll(moveDistance);
         });
 
@@ -108,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const firstImage = allImages[0];
             if (!firstImage) return;
             const moveDistance = (firstImage.offsetWidth + gap);
-            console.log(`Right arrow clicked. Image width: ${firstImage.offsetWidth}, Gap: ${gap}, Move distance: ${moveDistance}`);
             smoothScroll(-moveDistance);
         });
 
@@ -154,3 +151,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
