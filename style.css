@@ -29,7 +29,7 @@ body {
 }
 
 .gallery-image {
-    height: 300px; /* Use a fixed pixel height for all images */
+    height: 500px; /* Use a fixed pixel height for all images */
     object-fit: contain;
     pointer-events: none;
 }
@@ -66,3 +66,4 @@ body {
     border-right: 2px solid black;
     transform: translateY(-50%) rotate(45deg);
 }
+
