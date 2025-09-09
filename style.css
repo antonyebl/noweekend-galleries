@@ -2,14 +2,14 @@ body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
-    background-color: #ffffff; /* White background */
-    overflow: hidden; /* Prevents body scroll bars */
+    background-color: #ffffff;
+    overflow: hidden;
 }
 
 .gallery-container {
     width: 100%;
-    margin: 0; /* Ensures no default margin is applied */
-    /* Padding was removed in a previous step */
+    margin: 0;
+    padding: 0; /* Ensures no padding is affecting the size */
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -25,10 +25,11 @@ body {
     display: flex;
     gap: 15px;
     will-change: transform;
+    /* Height is now controlled by the images inside */
 }
 
 .gallery-image {
-    height: 300px; /* Use a fixed pixel height for all images */
+    height: 100%; /* The image height will be the full height of the gallery-wrapper */
     object-fit: contain;
     pointer-events: none;
 }
@@ -51,7 +52,6 @@ body {
     opacity: 1;
 }
 
-/* Change arrow color for white background */
 .left-arrow {
     left: 20px;
     border-top: 2px solid black;
