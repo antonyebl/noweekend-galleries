@@ -2,17 +2,18 @@ body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
-    background-color: #ffff;
+    background-color: #111;
     overflow: hidden; /* Prevents body scroll bars */
 }
 
 .gallery-container {
     width: 100%;
-    height: 100vh;
+    /* Removed: height: 100vh; */
+    /*padding: 15px 0; /* Add some top and bottom padding */
     display: flex;
     align-items: center;
-    overflow: hidden; /* Hides images outside the viewport */
-    position: relative; /* Needed for positioning arrows */
+    overflow: hidden;
+    position: relative;
     cursor: grab;
 }
 
@@ -22,27 +23,27 @@ body {
 
 .gallery-wrapper {
     display: flex;
-    gap: 15px; /* Spacing between images */
-    height: 60vh; /* Adjust this value to change image height */
-    will-change: transform; /* Performance optimization for smooth transitions */
+    gap: 15px;
+    height: 60vh;
+    will-change: transform;
 }
 
 .gallery-image {
-    height: 100%; /* All images will have the same height */
-    object-fit: contain; /* Ensures the image aspect ratio is maintained */
-    pointer-events: none; /* Prevents dragging the image itself */
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
 }
 
-/* --- New Arrow Button Styles --- */
+/* --- Arrow Button Styles --- */
 .nav-arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 30px; /* Size of the arrow */
+    width: 30px;
     height: 30px;
     background: none;
     cursor: pointer;
-    z-index: 10; /* Ensures arrows are above images */
+    z-index: 10;
     opacity: 0.7;
     transition: opacity 0.3s ease;
 }
@@ -51,19 +52,16 @@ body {
     opacity: 1;
 }
 
-/* Left Arrow */
 .left-arrow {
     left: 20px;
     border-top: 2px solid white;
     border-left: 2px solid white;
-    transform: translateY(-50%) rotate(-45deg); /* Rotates to form left arrow */
+    transform: translateY(-50%) rotate(-45deg);
 }
 
-/* Right Arrow */
 .right-arrow {
     right: 20px;
     border-top: 2px solid white;
     border-right: 2px solid white;
-    transform: translateY(-50%) rotate(45deg); /* Rotates to form right arrow */
+    transform: translateY(-50%) rotate(45deg);
 }
-
