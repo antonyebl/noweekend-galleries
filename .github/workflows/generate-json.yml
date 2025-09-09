@@ -3,8 +3,8 @@ name: Generate Images JSON
 on:
   push:
     branches:
-      - main  # or 'master', depending on your default branch
-  workflow_dispatch:  # Allows manual triggering of the workflow
+      - main
+  workflow_dispatch:
 
 jobs:
   generate_json:
@@ -14,18 +14,54 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate JSON files
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install image-average-color utility
+        run: npm install image-average-color
+
+      - name: Generate JSON files with average colors
         run: |
           for dir in gallery_*/; do
             if [ -d "$dir" ]; then
               echo "Processing $dir..."
               cd "$dir"
-              # Find all files ending with .jpg, sort them, and format as JSON
-              find . -maxdepth 1 -type f -iname "*.jpg" | sort | awk -F'/' '{printf "\"%s\",\n", $2}' | sed '$s/,$//' > images_list.json
-              # Add JSON array brackets
-              sed -i '1s/^/[/' images_list.json
-              echo "]" >> images_list.json
-              mv images_list.json images.json
+              node -e '
+                const fs = require("fs");
+                const path = require("path");
+                const { getAverageColor } = require("image-average-color");
+
+                const dir = ".";
+                const files = fs.readdirSync(dir).filter(file => file.toLowerCase().endsWith(".jpg")).sort();
+                
+                const data = [];
+                const promises = files.map(file => {
+                  const filePath = path.join(dir, file);
+                  return getAverageColor(filePath)
+                    .then(color => {
+                      const hexColor = "#" + color.map(c => Math.round(c).toString(16).padStart(2, "0")).join("");
+                      data.push({
+                        filename: file,
+                        avgColor: hexColor
+                      });
+                    })
+                    .catch(err => {
+                      console.error(`Error processing ${file}:`, err);
+                      // Fallback to a default color on error
+                      data.push({
+                        filename: file,
+                        avgColor: "#e0e0e0"
+                      });
+                    });
+                });
+
+                Promise.all(promises).then(() => {
+                  fs.writeFileSync("images.json", JSON.stringify(data, null, 2));
+                  console.log("images.json generated successfully.");
+                });
+              '
               cd ..
             fi
           done
@@ -33,5 +69,5 @@ jobs:
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'Generated images.json files'
+          commit_message: 'Updated images.json with average colors'
           file_pattern: 'gallery_*/images.json'
