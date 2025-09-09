@@ -1,135 +1,196 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Get the current gallery folder from the URL
-    const pathSegments = window.location.pathname.split('/');
-    const galleryFolder = pathSegments[pathSegments.length - 2];
+    const gallery = document.getElementById('image-gallery');
+    const galleryScroll = document.querySelector('.gallery-scroll');
+    const galleryCounter = document.getElementById('gallery-counter');
+    const loadingElement = document.getElementById('loading');
     
-    // Load images from the JSON file
-    fetch('./images.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(images => {
-            const gallery = document.getElementById('image-gallery');
+    // Create edge navigation zones
+    const leftNav = document.createElement('div');
+    leftNav.className = 'gallery-edge-nav left';
+    document.body.appendChild(leftNav);
+    
+    const rightNav = document.createElement('div');
+    rightNav.className = 'gallery-edge-nav right';
+    document.body.appendChild(rightNav);
+    
+    // Function to load images from JSON
+    function loadImagesFromJson() {
+        // For local testing without a server
+        const localImages = [
+            {"url": "01.jpg", "alt": "Sunrise over mountains"},
+            {"url": "02.jpg", "alt": "Early morning mist"},
+            {"url": "03.jpg", "alt": "Sun rays through clouds"},
+            {"url": "04.jpg", "alt": "Golden hour landscape"},
+            {"url": "05.jpg", "alt": "Sunrise reflection on water"},
+            {"url": "06.jpg", "alt": "Colorful morning sky"},
+            {"url": "07.jpg", "alt": "Sun breaking horizon"},
+            {"url": "08.jpg", "alt": "Dawn panoramic view"}
+        ];
+        processImages(localImages);
+    }
+    
+    function processImages(images) {
+        if (images.length === 0) {
+            loadingElement.textContent = "No images found";
+            return;
+        }
+        
+        // Hide loading indicator
+        loadingElement.style.display = 'none';
+        
+        // Create gallery items for each image
+        images.forEach((image, index) => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.style.animationDelay = `${index * 0.1}s`;
             
-            // Create gallery items for each image
-            images.forEach((image, index) => {
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
-                item.style.animationDelay = `${index * 0.1}s`;
-                
-                const img = document.createElement('img');
-                img.src = image.url;
-                img.alt = image.alt || `Image ${index + 1}`;
-                img.className = 'gallery-img';
-                
-                // Lazy loading for better performance
-                img.loading = 'lazy';
-                
-                item.appendChild(img);
-                gallery.appendChild(item);
-            });
+            const imgContainer = document.createElement('div');
+            imgContainer.className = 'gallery-img-container';
             
-            // Initialize gallery navigation after images are loaded
-            initGalleryNavigation();
-        })
-        .catch(error => {
-            console.error('Error loading images:', error);
-            const gallery = document.getElementById('image-gallery');
-            gallery.innerHTML = '<p class="error-message">Failed to load images. Please try again later.</p>';
+            const img = document.createElement('img');
+            img.src = image.url;
+            img.alt = image.alt || `Image ${index + 1}`;
+            img.className = 'gallery-img';
+            
+            imgContainer.appendChild(img);
+            item.appendChild(imgContainer);
+            gallery.appendChild(item);
         });
+        
+        // Initialize gallery navigation after images are loaded
+        initGalleryNavigation(images.length);
+    }
     
-    function initGalleryNavigation() {
-        const galleryScroll = document.querySelector('.gallery-scroll');
-        const prevBtn = document.querySelector('.prev');
-        const nextBtn = document.querySelector('.next');
+    function initGalleryNavigation(totalImages) {
         const galleryItems = document.querySelectorAll('.gallery-item');
         
         if (galleryItems.length === 0) return;
         
-        // Calculate scroll amount (item width + gap)
-        const firstItem = galleryItems[0];
-        const itemStyle = window.getComputedStyle(firstItem);
-        const itemWidth = firstItem.offsetWidth + parseInt(itemStyle.marginRight);
+        // Update counter and button states
+        function updateUI() {
+            const maxScrollPosition = gallery.scrollWidth - galleryScroll.clientWidth;
+            let currentIndex = 0;
+            let minDistance = Infinity;
+            
+            // Find which image is most centered
+            galleryItems.forEach((item, index) => {
+                const itemRect = item.getBoundingClientRect();
+                const galleryRect = galleryScroll.getBoundingClientRect();
+                const itemCenter = itemRect.left + itemRect.width/2;
+                const galleryCenter = galleryRect.left + galleryRect.width/2;
+                const distance = Math.abs(itemCenter - galleryCenter);
+                
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    currentIndex = index;
+                }
+            });
+            
+            galleryCounter.textContent = `${currentIndex + 1}/${totalImages}`;
+        }
         
-        // Next button event
-        nextBtn.addEventListener('click', function() {
+        // Edge navigation
+        const leftEdge = document.querySelector('.gallery-edge-nav.left');
+        const rightEdge = document.querySelector('.gallery-edge-nav.right');
+        
+        leftEdge.addEventListener('click', function() {
             galleryScroll.scrollBy({
-                left: itemWidth,
+                left: -galleryScroll.clientWidth * 0.8,
                 behavior: 'smooth'
             });
         });
         
-        // Previous button event
-        prevBtn.addEventListener('click', function() {
+        rightEdge.addEventListener('click', function() {
             galleryScroll.scrollBy({
-                left: -itemWidth,
+                left: galleryScroll.clientWidth * 0.8,
                 behavior: 'smooth'
             });
         });
         
-        // Keyboard navigation for accessibility
+        // Keyboard navigation
         document.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowRight') {
-                nextBtn.click();
+                galleryScroll.scrollBy({
+                    left: galleryScroll.clientWidth * 0.8,
+                    behavior: 'smooth'
+                });
             } else if (e.key === 'ArrowLeft') {
-                prevBtn.click();
+                galleryScroll.scrollBy({
+                    left: -galleryScroll.clientWidth * 0.8,
+                    behavior: 'smooth'
+                });
             }
         });
         
-        // Touch and mouse drag handling
-        let isDown = false;
+        // Update UI on scroll
+        galleryScroll.addEventListener('scroll', updateUI);
+        
+        // Update on resize
+        window.addEventListener('resize', updateUI);
+        
+        // Initialize
+        updateUI();
+        
+        // Improved drag scrolling for mouse
+        let isDragging = false;
         let startX;
         let scrollLeft;
         
-        galleryScroll.addEventListener('mousedown', (e) => {
-            isDown = true;
+        const startDrag = (e) => {
+            // Only respond to left mouse button
+            if (e.button !== 0) return;
+            
+            isDragging = true;
             startX = e.pageX - galleryScroll.offsetLeft;
             scrollLeft = galleryScroll.scrollLeft;
-            galleryScroll.style.cursor = 'grabbing';
+            galleryScroll.classList.add('grabbing');
             galleryScroll.style.scrollBehavior = 'auto';
-        });
+            
+            // Prevent text selection while dragging
+            e.preventDefault();
+        };
         
-        galleryScroll.addEventListener('mouseleave', () => {
-            isDown = false;
-            galleryScroll.style.cursor = 'grab';
+        const endDrag = () => {
+            isDragging = false;
+            galleryScroll.classList.remove('grabbing');
             galleryScroll.style.scrollBehavior = 'smooth';
-        });
+        };
         
-        galleryScroll.addEventListener('mouseup', () => {
-            isDown = false;
-            galleryScroll.style.cursor = 'grab';
-            galleryScroll.style.scrollBehavior = 'smooth';
-        });
-        
-        galleryScroll.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
+        const duringDrag = (e) => {
+            if (!isDragging) return;
             e.preventDefault();
             const x = e.pageX - galleryScroll.offsetLeft;
             const walk = (x - startX) * 2;
             galleryScroll.scrollLeft = scrollLeft - walk;
-        });
+        };
+        
+        // Mouse events
+        galleryScroll.addEventListener('mousedown', startDrag);
+        galleryScroll.addEventListener('mouseleave', endDrag);
+        galleryScroll.addEventListener('mouseup', endDrag);
+        galleryScroll.addEventListener('mousemove', duringDrag);
         
         // Touch events for mobile
         galleryScroll.addEventListener('touchstart', (e) => {
-            isDown = true;
+            isDragging = true;
             startX = e.touches[0].pageX - galleryScroll.offsetLeft;
             scrollLeft = galleryScroll.scrollLeft;
             galleryScroll.style.scrollBehavior = 'auto';
         }, { passive: true });
         
         galleryScroll.addEventListener('touchend', () => {
-            isDown = false;
+            isDragging = false;
             galleryScroll.style.scrollBehavior = 'smooth';
         });
         
         galleryScroll.addEventListener('touchmove', (e) => {
-            if (!isDown) return;
+            if (!isDragging) return;
             const x = e.touches[0].pageX - galleryScroll.offsetLeft;
             const walk = (x - startX) * 2;
             galleryScroll.scrollLeft = scrollLeft - walk;
         }, { passive: true });
     }
+    
+    // Start loading images
+    loadImagesFromJson();
 });
