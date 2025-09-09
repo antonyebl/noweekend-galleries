@@ -4,11 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const leftArrow = document.querySelector('.left-arrow');
     const rightArrow = document.querySelector('.right-arrow');
 
-    // A counter to track image loading
     let imagesLoadedCount = 0;
     const allImages = [];
 
-    // --- Core Logic: Fetch and Load Images ---
     fetch('images.json')
         .then(response => {
             if (!response.ok) {
@@ -21,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('images.json content is not a valid array.');
             }
 
-            // Create and append original images
             imageFilenames.forEach(filename => {
                 const img = document.createElement('img');
                 img.src = filename;
@@ -30,13 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 galleryWrapper.appendChild(img);
                 allImages.push(img);
 
-                // Add an event listener to check when the image is fully loaded
                 img.onload = () => {
                     imagesLoadedCount++;
                     if (imagesLoadedCount === imageFilenames.length) {
-                        // All original images are loaded, now we can set up the gallery
                         setupGallery(imageFilenames);
                     }
+                };
+                img.onerror = () => {
+                    console.error(`Error loading image: ${filename}`);
                 };
             });
         })
@@ -45,9 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             galleryWrapper.innerHTML = `<p style="color:white; text-align:center;">Error loading gallery. Please ensure the images.json file exists and is valid.</p>`;
         });
 
-    // --- Setup function that runs AFTER all images are loaded ---
     function setupGallery(imageFilenames) {
-        // Now that original images are loaded, create duplicates for the loop
         allImages.forEach(img => {
             const clone = img.cloneNode(true);
             galleryWrapper.appendChild(clone);
@@ -57,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let startPos = 0;
         let currentTranslate = 0;
         let prevTranslate = 0;
-        let animationFrameId;
         const gap = 15;
 
         // --- Mouse Drag Functionality ---
@@ -90,12 +85,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const firstImage = allImages[0];
             if (!firstImage) return;
 
-            let moveDistance;
+            const moveDistance = (firstImage.offsetWidth + gap);
+            console.log(`Key pressed. Image width: ${firstImage.offsetWidth}, Gap: ${gap}, Move distance: ${moveDistance}`);
+
             if (e.key === 'ArrowRight') {
-                moveDistance = -(firstImage.offsetWidth + gap);
-                smoothScroll(moveDistance);
+                smoothScroll(-moveDistance);
             } else if (e.key === 'ArrowLeft') {
-                moveDistance = (firstImage.offsetWidth + gap);
                 smoothScroll(moveDistance);
             }
         });
@@ -104,13 +99,17 @@ document.addEventListener('DOMContentLoaded', () => {
         leftArrow.addEventListener('click', () => {
             const firstImage = allImages[0];
             if (!firstImage) return;
-            smoothScroll(firstImage.offsetWidth + gap);
+            const moveDistance = (firstImage.offsetWidth + gap);
+            console.log(`Left arrow clicked. Image width: ${firstImage.offsetWidth}, Gap: ${gap}, Move distance: ${moveDistance}`);
+            smoothScroll(moveDistance);
         });
 
         rightArrow.addEventListener('click', () => {
             const firstImage = allImages[0];
             if (!firstImage) return;
-            smoothScroll(-(firstImage.offsetWidth + gap));
+            const moveDistance = (firstImage.offsetWidth + gap);
+            console.log(`Right arrow clicked. Image width: ${firstImage.offsetWidth}, Gap: ${gap}, Move distance: ${moveDistance}`);
+            smoothScroll(-moveDistance);
         });
 
         // --- Helper Functions ---
@@ -149,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 500);
         }
 
-        // Initial check and resize handler
         window.addEventListener('resize', () => {
             prevTranslate = currentTranslate;
             checkAndLoop();
