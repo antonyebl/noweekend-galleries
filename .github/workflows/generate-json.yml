@@ -25,9 +25,7 @@ jobs:
         run: npm install
 
       - name: Generate JSON files with average colors
-        run: |
-          cd .github/workflows
-          node generate-json.mjs
+        run: node generate-json.mjs
       
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
