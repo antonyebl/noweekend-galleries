@@ -1,8 +1,0 @@
-{
-  "name": "gallery-scripts",
-  "version": "1.0.0",
-  "description": "Scripts for gallery automation",
-  "dependencies": {
-    "image-average-color": "^2.1.2"
-  }
-}
