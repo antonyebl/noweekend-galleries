@@ -1,10 +1,42 @@
 [
-  "01.jpg",
-  "02.jpg",
-  "03.jpg",
-  "04.jpg",
-  "05.jpg",
-  "06.jpg",
-  "07.jpg",
-  "08.jpg"
+  {
+    "filename": "01.jpg",
+    "avgColor": "#e0e0e0"
+  },
+  {
+    "filename": "02.jpg",
+    "avgColor": "#e0e0e0"
+  },
+  {
+    "filename": "03.jpg",
+    "avgColor": "#e0e0e0"
+  },
+  {
+    "filename": "04.jpg",
+    "avgColor": "#e0e0e0"
+  },
+  {
+    "filename": "05.jpg",
+    "avgColor": "#e0e0e0"
+  },
+  {
+    "filename": "06.jpg",
+    "avgColor": "#e0e0e0"
+  },
+  {
+    "filename": "07.jpg",
+    "avgColor": "#e0e0e0"
+  },
+  {
+    "filename": "08.jpg",
+    "avgColor": "#e0e0e0"
+  },
+  {
+    "filename": "2025-09-10_171103_screenshot.jpg",
+    "avgColor": "#e0e0e0"
+  },
+  {
+    "filename": "P1010130+sm.jpg",
+    "avgColor": "#e0e0e0"
+  }
 ]
