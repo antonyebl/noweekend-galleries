@@ -19,23 +19,22 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install image-average-color utility
-        run: npm install image-average-color
+      - name: Install dependencies
+        run: npm install
 
       - name: Generate JSON files with average colors
         run: |
           for dir in gallery_*/; do
             if [ -d "$dir" ]; then
               echo "Processing $dir..."
-              cd "$dir"
               node -e '
                 const fs = require("fs");
                 const path = require("path");
                 const { getAverageColor } = require("image-average-color");
 
-                const dir = ".";
+                const dir = process.argv[1];
                 const files = fs.readdirSync(dir).filter(file => file.toLowerCase().endsWith(".jpg")).sort();
-                
+
                 const data = [];
                 const promises = files.map(file => {
                   const filePath = path.join(dir, file);
@@ -49,7 +48,6 @@ jobs:
                     })
                     .catch(err => {
                       console.error(`Error processing ${file}:`, err);
-                      // Fallback to a default color on error
                       data.push({
                         filename: file,
                         avgColor: "#e0e0e0"
@@ -58,14 +56,13 @@ jobs:
                 });
 
                 Promise.all(promises).then(() => {
-                  fs.writeFileSync("images.json", JSON.stringify(data, null, 2));
+                  fs.writeFileSync(path.join(dir, "images.json"), JSON.stringify(data, null, 2));
                   console.log("images.json generated successfully.");
                 });
-              '
-              cd ..
+              ' "$dir"
             fi
           done
-      
+
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
