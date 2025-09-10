@@ -10,7 +10,7 @@ jobs:
   generate_json:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # This line grants write permissions
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -25,7 +25,9 @@ jobs:
         run: npm install
 
       - name: Generate JSON files with average colors
-        run: node .github/workflows/generate-json.mjs
+        run: |
+          cd .github/workflows
+          node generate-json.mjs
       
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
