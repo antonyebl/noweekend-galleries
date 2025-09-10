@@ -34,7 +34,7 @@ jobs:
 
                 const dir = process.argv[1];
                 const files = fs.readdirSync(dir).filter(file => file.toLowerCase().endsWith(".jpg")).sort();
-
+                
                 const data = [];
                 const promises = files.map(file => {
                   const filePath = path.join(dir, file);
@@ -62,7 +62,7 @@ jobs:
               ' "$dir"
             fi
           done
-
+      
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
