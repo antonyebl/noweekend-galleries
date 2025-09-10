@@ -20,48 +20,11 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
 
       - name: Generate JSON files with average colors
-        run: |
-          for dir in gallery_*/; do
-            if [ -d "$dir" ]; then
-              echo "Processing $dir..."
-              node -e '
-                const fs = require("fs");
-                const path = require("path");
-                const { getAverageColor } = require("image-average-color");
-
-                const dir = process.argv[1];
-                const files = fs.readdirSync(dir).filter(file => file.toLowerCase().endsWith(".jpg")).sort();
-                
-                const data = [];
-                const promises = files.map(file => {
-                  const filePath = path.join(dir, file);
-                  return getAverageColor(filePath)
-                    .then(color => {
-                      const hexColor = "#" + color.map(c => Math.round(c).toString(16).padStart(2, "0")).join("");
-                      data.push({
-                        filename: file,
-                        avgColor: hexColor
-                      });
-                    })
-                    .catch(err => {
-                      console.error(`Error processing ${file}:`, err);
-                      data.push({
-                        filename: file,
-                        avgColor: "#e0e0e0"
-                      });
-                    });
-                });
-
-                Promise.all(promises).then(() => {
-                  fs.writeFileSync(path.join(dir, "images.json"), JSON.stringify(data, null, 2));
-                  console.log("images.json generated successfully.");
-                });
-              ' "$dir"
-            fi
-          done
+        run: node .github/workflows/generate-json.mjs
       
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
