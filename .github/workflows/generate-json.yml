@@ -20,12 +20,53 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-
-      - name: Install dependencies
-        run: npm install
-
+      
       - name: Generate JSON files with average colors
-        run: node generate-json.mjs
+        run: |
+          npm install image-average-color
+          
+          node -e '
+            const fs = require("fs");
+            const path = require("path");
+            const { getAverageColor } = require("image-average-color");
+
+            async function processGalleries() {
+              const rootDir = process.cwd();
+              const rootContents = await fs.promises.readdir(rootDir);
+              
+              for (const dir of rootContents) {
+                if (dir.startsWith("gallery_")) {
+                  const galleryPath = path.join(rootDir, dir);
+                  console.log(`Processing gallery: ${galleryPath}`);
+
+                  const files = (await fs.promises.readdir(galleryPath))
+                    .filter(file => file.toLowerCase().endsWith(".jpg") || file.toLowerCase().endsWith(".jpeg"))
+                    .sort();
+
+                  const imageData = await Promise.all(files.map(async file => {
+                    const filePath = path.join(galleryPath, file);
+                    try {
+                      const color = await getAverageColor(filePath);
+                      const hexColor = "#" + color.map(c => Math.round(c).toString(16).padStart(2, "0")).join("");
+                      return { filename: file, avgColor: hexColor };
+                    } catch (err) {
+                      console.error(`Error processing ${file}:`, err);
+                      return { filename: file, avgColor: "#e0e0e0" };
+                    }
+                  }));
+
+                  await fs.promises.writeFile(
+                    path.join(galleryPath, "images.json"),
+                    JSON.stringify(imageData, null, 2)
+                  );
+
+                  console.log(`images.json for ${dir} generated successfully.`);
+                }
+              }
+            }
+
+            processGalleries();
+          '
       
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
