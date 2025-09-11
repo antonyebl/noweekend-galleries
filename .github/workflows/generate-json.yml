@@ -21,28 +21,30 @@ jobs:
         with:
           node-version: '18'
       
-      - name: Generate JSON files with average colors
+      - name: Create index.html and generate JSON
         run: |
           npm install sharp
           
-          node -e '
-            const fs = require("fs");
-            const path = require("path");
-            const sharp = require("sharp");
+          for dir in gallery_*/; do
+            if [ -d "$dir" ]; then
+              if [ ! -f "$dir/index.html" ]; then
+                echo "Creating index.html for new gallery: $dir"
+                cp .github/workflows/template_index.html "$dir/index.html"
+              fi
 
-            async function processGalleries() {
-              const rootDir = process.cwd();
-              const rootContents = await fs.promises.readdir(rootDir);
-              
-              for (const dir of rootContents) {
-                if (dir.startsWith("gallery_")) {
-                  const galleryPath = path.join(rootDir, dir);
-                  console.log(`Processing gallery: ${galleryPath}`);
+              # Existing script to generate images.json
+              node -e '
+                const fs = require("fs");
+                const path = require("path");
+                const sharp = require("sharp");
 
+                const galleryPath = process.argv[1];
+                
+                async function processGallery() {
                   const files = (await fs.promises.readdir(galleryPath))
                     .filter(file => file.toLowerCase().endsWith(".jpg") || file.toLowerCase().endsWith(".jpeg"))
                     .sort();
-
+                  
                   const imageData = await Promise.all(files.map(async file => {
                     const filePath = path.join(galleryPath, file);
                     try {
@@ -61,16 +63,16 @@ jobs:
                     JSON.stringify(imageData, null, 2)
                   );
 
-                  console.log(`images.json for ${dir} generated successfully.`);
+                  console.log(`images.json for ${galleryPath} generated successfully.`);
                 }
-              }
-            }
-
-            processGalleries();
-          '
+                
+                processGallery();
+              ' "$dir"
+            fi
+          done
       
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'Updated images.json with average colors'
-          file_pattern: 'gallery_*/images.json'
+          commit_message: 'Updated gallery files'
+          file_pattern: 'gallery_*/index.html gallery_*/images.json'
