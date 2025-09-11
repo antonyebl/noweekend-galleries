@@ -18,9 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('images.json content is not a valid array.');
             }
 
-            let imagesLoadedCount = 0;
-            const totalImages = imageData.length;
-
+            // Create placeholders and start loading images
             imageData.forEach(item => {
                 const imgWrapper = document.createElement('div');
                 imgWrapper.classList.add('gallery-image-wrapper');
@@ -36,12 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 img.onload = () => {
                     img.classList.add('loaded');
-                    imagesLoadedCount++;
-                    if (imagesLoadedCount === totalImages) {
-                        setupGallery(imageData.map(i => i.filename));
-                    }
                 };
             });
+
+            // Set up gallery functionality immediately after placeholders are created
+            setupGallery(imageData.map(i => i.filename));
         })
         .catch(error => {
             console.error('Error fetching images:', error);
