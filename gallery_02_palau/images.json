@@ -1,30 +1,30 @@
 [
   {
     "filename": "palau_small_01.jpg",
-    "avgColor": "#e0e0e0"
+    "avgColor": "#282828"
   },
   {
     "filename": "palau_small_02.jpg",
-    "avgColor": "#e0e0e0"
+    "avgColor": "#080808"
   },
   {
     "filename": "palau_small_03.jpg",
-    "avgColor": "#e0e0e0"
+    "avgColor": "#e8d8d8"
   },
   {
     "filename": "palau_small_05.jpg",
-    "avgColor": "#e0e0e0"
+    "avgColor": "#080808"
   },
   {
     "filename": "palau_small_06.jpg",
-    "avgColor": "#e0e0e0"
+    "avgColor": "#281808"
   },
   {
     "filename": "palau_small_07.jpg",
-    "avgColor": "#e0e0e0"
+    "avgColor": "#f8f8f8"
   },
   {
     "filename": "palau_small_09.jpg",
-    "avgColor": "#e0e0e0"
+    "avgColor": "#080808"
   }
 ]
