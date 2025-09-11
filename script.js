@@ -44,19 +44,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     function setupGallery(imageFilenames) {
-        // --- Duplicates the gallery for the infinite scroll effect ---
-        const imagesToDuplicate = document.querySelectorAll('.gallery-image-wrapper');
-        imagesToDuplicate.forEach(imgWrapper => {
-            const clone = imgWrapper.cloneNode(true);
-            
-            // Check if the original image is loaded and apply the class to the clone
-            const originalImage = imgWrapper.querySelector('.gallery-image');
-            const clonedImage = clone.querySelector('.gallery-image');
-            if (originalImage && originalImage.classList.contains('loaded')) {
-                clonedImage.classList.add('loaded');
+        // --- Creates duplicates for the infinite scroll effect from scratch ---
+        imageFilenames.forEach(filename => {
+            const originalImage = allImages.find(img => img.src.endsWith(filename));
+            if (!originalImage || !originalImage.classList.contains('loaded')) {
+                return; // Only duplicate loaded images
             }
 
-            galleryWrapper.appendChild(clone);
+            const imgWrapper = document.createElement('div');
+            imgWrapper.classList.add('gallery-image-wrapper');
+            imgWrapper.style.backgroundColor = originalImage.parentNode.style.backgroundColor;
+            galleryWrapper.appendChild(imgWrapper);
+
+            const img = document.createElement('img');
+            img.src = originalImage.src;
+            img.alt = originalImage.alt;
+            img.classList.add('gallery-image', 'loaded');
+            imgWrapper.appendChild(img);
         });
 
         let isDragging = false;
@@ -125,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function checkAndLoop() {
             let originalImagesTotalWidth = 0;
+            const imagesToDuplicate = document.querySelectorAll('.gallery-image-wrapper');
             imagesToDuplicate.forEach(imgWrapper => {
                 originalImagesTotalWidth += imgWrapper.offsetWidth + gap;
             });
