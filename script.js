@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('images.json content is not a valid array.');
             }
 
-            // Create placeholders and start loading images
             imageData.forEach(item => {
                 const imgWrapper = document.createElement('div');
                 imgWrapper.classList.add('gallery-image-wrapper');
@@ -37,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             });
 
-            // Set up gallery functionality immediately after placeholders are created
             setupGallery(imageData.map(i => i.filename));
         })
         .catch(error => {
@@ -46,10 +44,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     function setupGallery(imageFilenames) {
-        // ... (rest of the setupGallery function, including duplicating images and handling events) ...
+        // --- Duplicates the gallery for the infinite scroll effect ---
         const imagesToDuplicate = document.querySelectorAll('.gallery-image-wrapper');
         imagesToDuplicate.forEach(imgWrapper => {
             const clone = imgWrapper.cloneNode(true);
+            
+            // Check if the original image is loaded and apply the class to the clone
+            const originalImage = imgWrapper.querySelector('.gallery-image');
+            const clonedImage = clone.querySelector('.gallery-image');
+            if (originalImage && originalImage.classList.contains('loaded')) {
+                clonedImage.classList.add('loaded');
+            }
+
             galleryWrapper.appendChild(clone);
         });
 
