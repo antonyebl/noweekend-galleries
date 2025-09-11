@@ -4,7 +4,7 @@ html, body {
     font-family: sans-serif;
     background-color: #ffffff;
     overflow: hidden;
-    height: 100%; /* Important for the images to take up full height */
+    height: 100%;
 }
 
 .gallery-container {
@@ -30,19 +30,22 @@ html, body {
     will-change: transform;
 }
 
+/* New Placeholder Styles */
+.gallery-image-wrapper {
+    height: 100%; /* Make the wrapper the same height as the gallery */
+    position: relative;
+}
+
 .gallery-image {
     height: 100%;
     object-fit: contain;
     pointer-events: none;
-    background-color: #e0e0e0; /* Default placeholder color */
     opacity: 0; /* Initially hidden */
     transition: opacity 0.5s ease-in-out;
 }
 
 .gallery-image.loaded {
     opacity: 1; /* Make the image visible after it's loaded */
-    animation: none;
-    background-color: transparent; /* Remove the background color */
 }
 
 /* --- Arrow Button Styles --- */
