@@ -3,10 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const galleryContainer = document.querySelector('.gallery-container');
     const leftArrow = document.querySelector('.left-arrow');
     const rightArrow = document.querySelector('.right-arrow');
-
+    
     const allImages = [];
 
-    // --- Fetch Image Data and Average Colors ---
     fetch('images.json')
         .then(response => {
             if (!response.ok) {
@@ -23,15 +22,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const totalImages = imageData.length;
 
             imageData.forEach(item => {
+                const imgWrapper = document.createElement('div');
+                imgWrapper.classList.add('gallery-image-wrapper');
+                imgWrapper.style.backgroundColor = item.avgColor;
+                galleryWrapper.appendChild(imgWrapper);
+
                 const img = document.createElement('img');
                 img.src = item.filename;
                 img.alt = item.filename;
                 img.classList.add('gallery-image');
-                galleryWrapper.appendChild(img);
+                imgWrapper.appendChild(img);
                 allImages.push(img);
-
-                // Apply the pre-calculated average color as the background
-                img.style.backgroundColor = item.avgColor;
 
                 img.onload = () => {
                     img.classList.add('loaded');
@@ -47,11 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
             galleryWrapper.innerHTML = `<p style="color:white; text-align:center;">Error loading gallery. Please ensure the images.json file exists and is valid.</p>`;
         });
 
-    // --- Setup Gallery Function (Runs After Images are Loaded) ---
     function setupGallery(imageFilenames) {
-        // Duplicate images for the infinite loop effect
-        allImages.forEach(img => {
-            const clone = img.cloneNode(true);
+        // ... (rest of the setupGallery function, including duplicating images and handling events) ...
+        const imagesToDuplicate = document.querySelectorAll('.gallery-image-wrapper');
+        imagesToDuplicate.forEach(imgWrapper => {
+            const clone = imgWrapper.cloneNode(true);
             galleryWrapper.appendChild(clone);
         });
 
@@ -121,8 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function checkAndLoop() {
             let originalImagesTotalWidth = 0;
-            allImages.forEach(img => {
-                originalImagesTotalWidth += img.offsetWidth + gap;
+            imagesToDuplicate.forEach(imgWrapper => {
+                originalImagesTotalWidth += imgWrapper.offsetWidth + gap;
             });
             originalImagesTotalWidth -= gap;
 
