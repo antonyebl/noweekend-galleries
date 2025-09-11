@@ -23,12 +23,12 @@ jobs:
       
       - name: Generate JSON files with average colors
         run: |
-          npm install image-average-color
+          npm install sharp
           
           node -e '
             const fs = require("fs");
             const path = require("path");
-            const { getAverageColor } = require("image-average-color");
+            const sharp = require("sharp");
 
             async function processGalleries() {
               const rootDir = process.cwd();
@@ -46,8 +46,9 @@ jobs:
                   const imageData = await Promise.all(files.map(async file => {
                     const filePath = path.join(galleryPath, file);
                     try {
-                      const color = await getAverageColor(filePath);
-                      const hexColor = "#" + color.map(c => Math.round(c).toString(16).padStart(2, "0")).join("");
+                      const { dominant } = await sharp(filePath).stats();
+                      const rgbColor = [dominant.r, dominant.g, dominant.b];
+                      const hexColor = "#" + rgbColor.map(c => Math.round(c).toString(16).padStart(2, "0")).join("");
                       return { filename: file, avgColor: hexColor };
                     } catch (err) {
                       console.error(`Error processing ${file}:`, err);
