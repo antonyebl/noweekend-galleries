@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const rightArrow = document.querySelector('.right-arrow');
     
     const allImages = [];
+    let imagesLoadedCount = 0;
 
     fetch('images.json')
         .then(response => {
@@ -33,34 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 img.onload = () => {
                     img.classList.add('loaded');
+                    imagesLoadedCount++;
+                    // Check if all images are loaded before setting up the gallery
+                    if (imagesLoadedCount === imageData.length) {
+                        setupGallery();
+                    }
                 };
             });
-
-            setupGallery(imageData.map(i => i.filename));
         })
         .catch(error => {
             console.error('Error fetching images:', error);
             galleryWrapper.innerHTML = `<p style="color:white; text-align:center;">Error loading gallery. Please ensure the images.json file exists and is valid.</p>`;
         });
 
-    function setupGallery(imageFilenames) {
-        // --- Creates duplicates for the infinite scroll effect from scratch ---
-        imageFilenames.forEach(filename => {
-            const originalImage = allImages.find(img => img.src.endsWith(filename));
-            if (!originalImage || !originalImage.classList.contains('loaded')) {
-                return; // Only duplicate loaded images
-            }
-
-            const imgWrapper = document.createElement('div');
-            imgWrapper.classList.add('gallery-image-wrapper');
-            imgWrapper.style.backgroundColor = originalImage.parentNode.style.backgroundColor;
-            galleryWrapper.appendChild(imgWrapper);
-
-            const img = document.createElement('img');
-            img.src = originalImage.src;
-            img.alt = originalImage.alt;
-            img.classList.add('gallery-image', 'loaded');
-            imgWrapper.appendChild(img);
+    function setupGallery() {
+        // --- Creates duplicates for the infinite scroll effect ---
+        const imagesToDuplicate = document.querySelectorAll('.gallery-image-wrapper');
+        imagesToDuplicate.forEach(imgWrapper => {
+            const clone = imgWrapper.cloneNode(true);
+            galleryWrapper.appendChild(clone);
         });
 
         let isDragging = false;
@@ -129,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function checkAndLoop() {
             let originalImagesTotalWidth = 0;
-            const imagesToDuplicate = document.querySelectorAll('.gallery-image-wrapper');
             imagesToDuplicate.forEach(imgWrapper => {
                 originalImagesTotalWidth += imgWrapper.offsetWidth + gap;
             });
